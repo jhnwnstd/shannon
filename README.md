@@ -1,3 +1,5 @@
+Here is the updated `README` to include the calculation of the Rényi entropy of order 2 (H2), explain what it is, and how it fits in with the rest of the calculations:
+
 # README
 
 ## Overview
@@ -25,12 +27,13 @@ Shannon's experiments involved predicting the next letter in a sequence of text,
 - regex
 - kenlm (KenLM language model library)
 - nltk
+- numpy
 
 ## Setup
 
 1. **Install Dependencies**:
    ```bash
-   pip install pandas regex kenlm nltk
+   pip install pandas regex kenlm nltk numpy
    ```
 
 2. **Download NLTK Data**:
@@ -63,6 +66,7 @@ Shannon's experiments involved predicting the next letter in a sequence of text,
    - Alphabet size
    - Zero-order approximation (H0)
    - First-order approximation (H1)
+   - Second-order approximation (H2)
    - Third-order approximation (H3)
    - Redundancy percentage
 
@@ -77,6 +81,10 @@ Shannon's experiments involved predicting the next letter in a sequence of text,
 3. **Calculate Entropy**:
    - **H0 (Zero-order approximation)**: Calculated using the logarithm of the alphabet size.
    - **H1 (First-order approximation)**: Calculated using the frequencies of individual characters or glyphs.
+   - **H2 (Second-order approximation)**: Calculated using the probabilities of encountering the same character twice when randomly sampling. This is also known as collision (or Rényi) entropy and is given by the formula:
+     ```python
+     H2 = -np.log2(np.sum(probabilities**2))
+     ```
    - **H3 (Third-order approximation)**: Calculated using the KenLM model to predict the next character or glyph in a sequence.
 
 4. **Calculate Redundancy**:
@@ -95,6 +103,7 @@ Vocab Count: 56057
 Alphabet Size: 26
 Zero-order approximation (H0): 4.70
 First-order approximation (H1): 4.18
+Second-order approximation (H2): 3.81
 Third-order approximation (H3) of 6-grams: 1.76
 Redundancy: 62.52%
 ```
@@ -106,8 +115,9 @@ Vocab Count: 2426
 Alphabet Size: 86
 Zero-order approximation (H0): 6.43
 First-order approximation (H1): 5.74
-Third-order approximation (H3) of 5-grams: 2.33
-Redundancy: 63.79%
+Second-order approximation (H2): 4.02
+Third-order approximation (H3) of 6-grams: 2.34
+Redundancy: 63.61%
 ```
 
 ## References

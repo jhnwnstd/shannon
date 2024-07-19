@@ -6,11 +6,12 @@ from pathlib import Path
 import tempfile
 
 import kenlm
+import numpy as np
 import pandas as pd
 import regex as reg
 
 # Configuration
-Q_GRAMS = 6 # KenLM model n-gram level
+Q_GRAMS = 6  # KenLM model n-gram level
 MODEL_DIR = Path.cwd() / "entropy_model"
 CORPUS_PATH = Path.cwd() / "Linear_B_Lexicon.csv"
 
@@ -92,6 +93,27 @@ def calculate_unigram_entropy(text):
     return -sum((freq / total_unigrams) * math.log2(freq / total_unigrams) for freq in unigram_freq.values())
 
 
+def calculate_H2(text):
+    """
+    Calculate the Rényi entropy of order 2 (H2).
+    This is also known as collision entropy.
+    """
+    # Join all tokens and remove spaces to consider character distribution
+    text = text.replace(' ', '')
+    
+    # Count character frequencies
+    char_freq = Counter(text)
+    total_chars = len(text)
+    
+    # Calculate probabilities
+    probabilities = np.array([count / total_chars for count in char_freq.values()])
+    
+    # Calculate H2
+    H2 = -np.log2(np.sum(probabilities**2))
+    
+    return H2
+
+
 def calculate_redundancy(H, H_max):
     return (1 - H / H_max) * 100
 
@@ -111,6 +133,7 @@ def process_linearb_corpus(corpus_path, q_gram):
         H0 = math.log2(len(set(''.join(lines).replace(' ', ''))))
         letter_freq = Counter(''.join(lines).replace(' ', ''))
         H1 = calculate_unigram_entropy(formatted_text)
+        H2 = calculate_H2(formatted_text)
         H3_kenlm = calculate_entropy_kenlm(model, lines)
         redundancy = calculate_redundancy(H3_kenlm, H0)
 
@@ -119,6 +142,7 @@ def process_linearb_corpus(corpus_path, q_gram):
         logging.info(f'Alphabet Size: {len(letter_freq):,}')
         logging.info(f"Zero-order approximation (H0): {H0:.2f}")
         logging.info(f"First-order approximation (H1): {H1:.2f}")
+        logging.info(f"Second-order approximation (H2): {H2:.2f}")
         logging.info(f"Third-order approximation (H3) of {Q_GRAMS}-grams: {H3_kenlm:.2f}")
         logging.info(f"Redundancy: {redundancy:.2f}%")
     else:
