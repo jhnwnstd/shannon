@@ -2,13 +2,13 @@
 
 ## Overview
 
-This project implements a computational method for estimating the entropy and redundancy of a language, inspired by the techniques described by Claude E. Shannon in his seminal paper, "Prediction and Entropy of Printed English" (1951). While Shannon's original work focused on the English language, this project extends the methodology to analyze the Linear B script.
+This project implements a computational method for estimating the entropy and redundancy of a language, inspired by the techniques described by Claude E. Shannon in his seminal paper, "Prediction and Entropy of Printed English" (1951). While Shannon's original work focused on the English language, this project extends the methodology to analyze various English corpora as well as the Linear B script, an ancient script used primarily for writing Mycenaean Greek.
 
 ## Background
 
 In his 1951 paper, Shannon introduced a method to estimate the entropy and redundancy of a language by leveraging the predictability of characters based on preceding text. Entropy is a measure of the average information content per symbol, while redundancy indicates the degree to which a language constrains or structures its text, making some sequences more predictable than others.
 
-Shannon's experiments involved predicting the next letter in a sequence of text, and he used this predictability to calculate entropy. This project replicates Shannon's methodology using modern computational tools and applies it to the Linear B script, an ancient script used primarily for writing Mycenaean Greek.
+Shannon's experiments involved predicting the next letter in a sequence of text, and he used this predictability to calculate entropy. This project replicates Shannon's methodology using modern computational tools and applies it to various English corpora and the Linear B script.
 
 ## Project Structure
 
@@ -45,14 +45,20 @@ Shannon's experiments involved predicting the next letter in a sequence of text,
 
 ## Usage
 
-1. **Run the Script**:
-   Execute the main script to process the corpus and calculate entropy and redundancy:
+1. **Run the English Corpora Script**:
+   Execute the script to process English corpora and calculate entropy and redundancy:
+   ```bash
+   python shannon_entro.py
+   ```
+
+2. **Run the Linear B Script**:
+   Execute the script to process the Linear B corpus and calculate entropy and redundancy:
    ```bash
    python linearb_entro.py
    ```
 
-2. **Output**:
-   The script will log the results, including:
+3. **Output**:
+   The scripts will log the results, including:
    - Vocabulary count
    - Alphabet size
    - Zero-order approximation (H0)
@@ -63,15 +69,15 @@ Shannon's experiments involved predicting the next letter in a sequence of text,
 ## Methodology
 
 1. **Load and Format Corpus**:
-   The script reads the `Linear_B_Lexicon.csv` file and formats the words by removing duplicates and cleaning the text using regular expressions to match Linear B glyphs.
+   The scripts read the respective corpus files and format the words by removing duplicates and cleaning the text using regular expressions to match the appropriate characters (Latin letters for English, Linear B glyphs for Linear B).
 
 2. **Build KenLM Model**:
-   A KenLM language model is trained on the formatted corpus. This model is used to calculate the entropy based on n-grams (sequences of n adjacent glyphs).
+   A KenLM language model is trained on the formatted corpus. This model is used to calculate the entropy based on n-grams (sequences of n adjacent characters or glyphs).
 
 3. **Calculate Entropy**:
    - **H0 (Zero-order approximation)**: Calculated using the logarithm of the alphabet size.
-   - **H1 (First-order approximation)**: Calculated using the frequencies of individual glyphs.
-   - **H3 (Third-order approximation)**: Calculated using the KenLM model to predict the next glyph in a sequence.
+   - **H1 (First-order approximation)**: Calculated using the frequencies of individual characters or glyphs.
+   - **H3 (Third-order approximation)**: Calculated using the KenLM model to predict the next character or glyph in a sequence.
 
 4. **Calculate Redundancy**:
    Redundancy is calculated as the percentage reduction in entropy due to the language's statistical structure:
@@ -81,14 +87,27 @@ Shannon's experiments involved predicting the next letter in a sequence of text,
 
 ## Example Output
 
+### English Corpus (Brown)
+```
+Corpus: brown
+Token Count: 1161192
+Vocab Count: 56057
+Alphabet Size: 26
+Zero-order approximation (H0): 4.70
+First-order approximation (H1): 4.18
+Third-order approximation (H3) of 6-grams: 1.76
+Redundancy: 62.52%
+```
+
+### Linear B Corpus
 ```
 Linear B Corpus
-Vocab Count: 1000
-Alphabet Size: 87
-Zero-order approximation (H0): 6.45
-First-order approximation (H1): 4.32
-Third-order approximation (H3) of 5-grams: 2.87
-Redundancy: 55.42%
+Vocab Count: 2426
+Alphabet Size: 86
+Zero-order approximation (H0): 6.43
+First-order approximation (H1): 5.74
+Third-order approximation (H3) of 5-grams: 2.33
+Redundancy: 63.79%
 ```
 
 ## References
@@ -102,4 +121,4 @@ This project is licensed under the MIT License.
 
 ## Acknowledgements
 
-Special thanks to Claude E. Shannon for his groundbreaking work in information theory, which serves as the foundation for this project.
+Special thanks to Claude E. Shannon for his groundbreaking work in information theory, which serves as the foundation for this project. Additionally, I extend a heartfelt thank you to Alice Kober for her meticulous and pioneering work deciphering the Linear B script. I stand on the shoulders of giants.
