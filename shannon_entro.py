@@ -30,8 +30,8 @@ def ensure_corpus_available(corpus_name):
 
 
 def clean_and_format_words(words):
-    """Clean and format words by removing non-alphabet characters and converting to lowercase."""
-    return [' '.join(reg.sub(r'[^a-zA-Z]', '', word).lower()) for word in words if len(word) >= 3]
+    """Clean and format words by removing non-letter characters and converting to lowercase."""
+    return [' '.join(reg.sub(r'[^\p{L}]', '', word).lower()) for word in words if len(word) >= 3]
 
 
 def run_command(command, error_message):
@@ -80,9 +80,15 @@ def calculate_entropy_kenlm(model, text):
 
 def calculate_unigram_entropy(text):
     """Calculate the first-order entropy (unigram entropy) of the text."""
+    # Count character frequencies
     unigram_freq = Counter(text.replace('\n', '').replace(' ', ''))
+    
+    # Convert frequencies to probabilities
     total_unigrams = sum(unigram_freq.values())
-    return -sum((freq / total_unigrams) * math.log2(freq / total_unigrams) for freq in unigram_freq.values())
+    probabilities = np.array(list(unigram_freq.values())) / total_unigrams
+    
+    # Calculate entropy
+    return -np.sum(probabilities * np.log2(probabilities))
 
 
 def calculate_H2(text):

@@ -88,10 +88,15 @@ def calculate_entropy_kenlm(model, text):
 
 def calculate_unigram_entropy(text):
     """Calculate the first-order entropy (unigram entropy) of the text."""
+    # Count character frequencies
     unigram_freq = Counter(text.replace('\n', '').replace(' ', ''))
+    
+    # Convert frequencies to probabilities
     total_unigrams = sum(unigram_freq.values())
-    return -sum((freq / total_unigrams) * math.log2(freq / total_unigrams) for freq in unigram_freq.values())
-
+    probabilities = np.array(list(unigram_freq.values())) / total_unigrams
+    
+    # Calculate entropy
+    return -np.sum(probabilities * np.log2(probabilities))
 
 def calculate_H2(text):
     """
