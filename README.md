@@ -1,5 +1,3 @@
-Here is the updated `README` to include the calculation of the Rényi entropy of order 2 (H2), explain what it is, and how it fits in with the rest of the calculations:
-
 # README
 
 ## Overview
