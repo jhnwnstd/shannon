@@ -67,7 +67,7 @@ def load_and_format_corpus(csv_path):
     formatted_words = []
     for word in unique_words_series:
         formatted_word = ' '.join(reg.findall(r'[\U00010000-\U0001007F\U00010080-\U000100FF]', word))
-        if formatted_word.strip():
+        if (formatted_word := formatted_word.strip()):
             formatted_words.append(formatted_word)
 
     formatted_text = '\n'.join(formatted_words)
@@ -98,6 +98,7 @@ def calculate_unigram_entropy(text):
     # Calculate entropy
     return -np.sum(probabilities * np.log2(probabilities))
 
+
 def calculate_H2(text):
     """
     Calculate the Rényi entropy of order 2 (H2).
@@ -120,6 +121,7 @@ def calculate_H2(text):
 
 
 def calculate_redundancy(H, H_max):
+    """Calculate the redundancy of the text."""
     return (1 - H / H_max) * 100
 
 
@@ -150,6 +152,13 @@ def process_linearb_corpus(corpus_path, q_gram):
         logging.info(f"Second-order approximation (H2): {H2:.2f}")
         logging.info(f"Third-order approximation (H3) of {Q_GRAMS}-grams: {H3_kenlm:.2f}")
         logging.info(f"Redundancy: {redundancy:.2f}%")
+
+        # Delete the model file after use
+        try:
+            Path(model_path).unlink(missing_ok=True)
+        except Exception as e:
+            logging.error(f"Failed to delete model file: {model_path}, error: {e}")
+
     else:
         logging.error(f"Failed to process corpus: {corpus_path.stem}")
 

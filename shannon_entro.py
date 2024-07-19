@@ -144,6 +144,13 @@ def process_single_corpus(corpus_name):
         logging.info(f"Second-order approximation (H2): {H2:.2f}")
         logging.info(f"Third-order approximation (H3) of {Q_GRAMS}-grams: {H3_kenlm:.2f}")
         logging.info(f"Redundancy: {redundancy:.2f}%")
+
+        # Delete the model file after use
+        try:
+            Path(model_path).unlink(missing_ok=True)
+        except Exception as e:
+            logging.error(f"Failed to delete model file: {model_path}, error: {e}")
+
     else:
         logging.error(f"Failed to process corpus: {corpus_name}")
 
