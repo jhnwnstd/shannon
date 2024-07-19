@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project implements a computational method for estimating the entropy and redundancy of a language, inspired by the techniques described by Claude E. Shannon in his seminal paper, "Prediction and Entropy of Printed English" (1951). While Shannon's original work focused on the English language, this project extends the methodology to analyze various English corpora as well as the Linear B script, an ancient script used primarily for writing Mycenaean Greek.
+This project implements a computational method for estimating the word-level entropy and redundancy of a language, inspired by the techniques described by Claude E. Shannon in his seminal paper, "Prediction and Entropy of Printed English" (1951). While Shannon's original work focused only on English, this project extends the methodology to analyze various English corpora as well as the Linear B script, an ancient script used for writing Mycenaean Greek.
 
 ## Background
 
