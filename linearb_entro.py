@@ -7,16 +7,21 @@ import tempfile
 
 import kenlm
 import pandas as pd
-import regex
+import regex as reg
 
 # Configuration
-CORPUS_PATH = Path.cwd() / "Linear_B_Lexicon.csv"
+Q_GRAMS = 6 # KenLM model n-gram level
 MODEL_DIR = Path.cwd() / "entropy_model"
-Q_GRAMS = 5  # KenLM model n-gram level
+CORPUS_PATH = Path.cwd() / "Linear_B_Lexicon.csv"
 
 # Setup
 MODEL_DIR.mkdir(parents=True, exist_ok=True)
 logging.basicConfig(level=logging.INFO, format='%(message)s')
+
+
+def ensure_directory_exists(directory_path):
+    """Ensure the specified directory exists, creating it if necessary."""
+    Path(directory_path).mkdir(parents=True, exist_ok=True)
 
 
 def run_command(command, error_message):
@@ -29,6 +34,8 @@ def run_command(command, error_message):
 
 
 def build_kenlm_model(text, model_directory, q_gram):
+    ensure_directory_exists(model_directory)
+    
     with tempfile.NamedTemporaryFile(delete=False) as temp_text_file:
         temp_text_file.write(text.encode('utf-8'))
         temp_text_file_path = temp_text_file.name
@@ -39,8 +46,10 @@ def build_kenlm_model(text, model_directory, q_gram):
     corpus_name = Path(temp_text_file_path).stem
     binary_file = model_directory / f"{corpus_name}_{q_gram}gram.klm"
 
-    if run_command(f"lmplz -o {q_gram} --text {temp_text_file_path} --arpa {temp_arpa_file_path}", "Failed to generate ARPA model") and \
-       run_command(f"build_binary {temp_arpa_file_path} {binary_file}", "Failed to convert ARPA model to binary format"):
+    arpa_command = f"lmplz -o {q_gram} --text {temp_text_file_path} --arpa {temp_arpa_file_path} --discount_fallback"
+    binary_command = f"build_binary {temp_arpa_file_path} {binary_file}"
+
+    if run_command(arpa_command, "Failed to generate ARPA model") and run_command(binary_command, "Failed to convert ARPA model to binary format"):
         Path(temp_text_file_path).unlink(missing_ok=True)
         Path(temp_arpa_file_path).unlink(missing_ok=True)
         return binary_file
@@ -56,7 +65,7 @@ def load_and_format_corpus(csv_path):
 
     formatted_words = []
     for word in unique_words_series:
-        formatted_word = ' '.join(regex.findall(r'[\U00010000-\U0001007F\U00010080-\U000100FF]', word))
+        formatted_word = ' '.join(reg.findall(r'[\U00010000-\U0001007F\U00010080-\U000100FF]', word))
         if formatted_word.strip():
             formatted_words.append(formatted_word)
 
@@ -66,12 +75,21 @@ def load_and_format_corpus(csv_path):
     return formatted_text, unique_words
 
 
-def calculate_entropy_kenlm(model, lines):
-    prepared_text = ' '.join(lines)
-    log_prob = model.score(prepared_text, bos=False, eos=False)
-    log_prob /= math.log(2)
-    num_grams = max(len(prepared_text.split()) - Q_GRAMS, 1)  # Prevent division by zero
+def calculate_entropy_kenlm(model, text):
+    """Calculate the entropy of the text using the KenLM model."""
+    if isinstance(text, list):
+        text = ' '.join(text)
+    
+    log_prob = model.score(text, bos=False, eos=False) / math.log(2)
+    num_grams = max(len(text.split()) - Q_GRAMS, 1)  # Prevent division by zero
     return -log_prob / num_grams
+
+
+def calculate_unigram_entropy(text):
+    """Calculate the first-order entropy (unigram entropy) of the text."""
+    unigram_freq = Counter(text.replace('\n', '').replace(' ', ''))
+    total_unigrams = sum(unigram_freq.values())
+    return -sum((freq / total_unigrams) * math.log2(freq / total_unigrams) for freq in unigram_freq.values())
 
 
 def calculate_redundancy(H, H_max):
@@ -80,6 +98,11 @@ def calculate_redundancy(H, H_max):
 
 def process_linearb_corpus(corpus_path, q_gram):
     formatted_text, unique_words = load_and_format_corpus(corpus_path)
+    
+    if len(formatted_text) < q_gram:
+        logging.error("Insufficient data to build a language model. Increase the data size or decrease the n-gram level.")
+        return
+
     model_path = build_kenlm_model(formatted_text, MODEL_DIR, q_gram)
 
     if model_path:
@@ -87,8 +110,7 @@ def process_linearb_corpus(corpus_path, q_gram):
         lines = formatted_text.split('\n')
         H0 = math.log2(len(set(''.join(lines).replace(' ', ''))))
         letter_freq = Counter(''.join(lines).replace(' ', ''))
-        total_letters = sum(letter_freq.values())
-        H1 = -sum((freq / total_letters) * math.log2(freq / total_letters) for freq in letter_freq.values())
+        H1 = calculate_unigram_entropy(formatted_text)
         H3_kenlm = calculate_entropy_kenlm(model, lines)
         redundancy = calculate_redundancy(H3_kenlm, H0)
 
@@ -99,6 +121,8 @@ def process_linearb_corpus(corpus_path, q_gram):
         logging.info(f"First-order approximation (H1): {H1:.2f}")
         logging.info(f"Third-order approximation (H3) of {Q_GRAMS}-grams: {H3_kenlm:.2f}")
         logging.info(f"Redundancy: {redundancy:.2f}%")
+    else:
+        logging.error(f"Failed to process corpus: {corpus_path.stem}")
 
 if __name__ == '__main__':
     process_linearb_corpus(CORPUS_PATH, Q_GRAMS)
