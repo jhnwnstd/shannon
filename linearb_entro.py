@@ -26,6 +26,7 @@ def ensure_directory_exists(directory_path):
 
 
 def run_command(command, error_message):
+    """Run a shell command using subprocess, capturing and logging any errors."""
     try:
         subprocess.run(command, shell=True, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
     except subprocess.CalledProcessError as e:
@@ -35,32 +36,30 @@ def run_command(command, error_message):
 
 
 def build_kenlm_model(text, model_directory, q_gram):
+    """Build a KenLM language model from the specified text."""
     ensure_directory_exists(model_directory)
     
     with tempfile.NamedTemporaryFile(delete=False) as temp_text_file:
         temp_text_file.write(text.encode('utf-8'))
         temp_text_file_path = temp_text_file.name
 
-    with tempfile.NamedTemporaryFile(delete=False) as temp_arpa_file:
-        temp_arpa_file_path = temp_arpa_file.name
-
     corpus_name = Path(temp_text_file_path).stem
+    arpa_file = model_directory / f"{corpus_name}_{q_gram}gram.arpa"
     binary_file = model_directory / f"{corpus_name}_{q_gram}gram.klm"
 
-    arpa_command = f"lmplz -o {q_gram} --text {temp_text_file_path} --arpa {temp_arpa_file_path} --discount_fallback"
-    binary_command = f"build_binary {temp_arpa_file_path} {binary_file}"
+    arpa_command = f"lmplz -o {q_gram} --text {temp_text_file_path} --arpa {arpa_file} --discount_fallback"
+    binary_command = f"build_binary {arpa_file} {binary_file}"
 
     if run_command(arpa_command, "Failed to generate ARPA model") and run_command(binary_command, "Failed to convert ARPA model to binary format"):
         Path(temp_text_file_path).unlink(missing_ok=True)
-        Path(temp_arpa_file_path).unlink(missing_ok=True)
         return binary_file
     else:
         Path(temp_text_file_path).unlink(missing_ok=True)
-        Path(temp_arpa_file_path).unlink(missing_ok=True)
         return None
 
 
 def load_and_format_corpus(csv_path):
+    """Load and format the Linear B corpus data."""
     df = pd.read_csv(csv_path)
     unique_words_series = df['word'].drop_duplicates()
 
@@ -126,6 +125,7 @@ def calculate_redundancy(H, H_max):
 
 
 def process_linearb_corpus(corpus_path, q_gram):
+    """Process the Linear B corpus to compute entropy and redundancy metrics."""
     formatted_text, unique_words = load_and_format_corpus(corpus_path)
     
     if len(formatted_text) < q_gram:

@@ -45,26 +45,25 @@ def run_command(command, error_message):
 
 
 def build_kenlm_model(text, model_directory, q_gram):
+    """Build a KenLM language model from the specified text."""
     ensure_directory_exists(model_directory)
     
     with tempfile.NamedTemporaryFile(delete=False) as temp_text_file:
         temp_text_file.write(text.encode('utf-8'))
         temp_text_file_path = temp_text_file.name
 
-    with tempfile.NamedTemporaryFile(delete=False) as temp_arpa_file:
-        temp_arpa_file_path = temp_arpa_file.name
-
     corpus_name = Path(temp_text_file_path).stem
+    arpa_file = model_directory / f"{corpus_name}_{q_gram}gram.arpa"
     binary_file = model_directory / f"{corpus_name}_{q_gram}gram.klm"
 
-    if run_command(f"lmplz -o {q_gram} --discount_fallback --text {temp_text_file_path} --arpa {temp_arpa_file_path}", "Failed to generate ARPA model") and \
-       run_command(f"build_binary {temp_arpa_file_path} {binary_file}", "Failed to convert ARPA model to binary format"):
+    arpa_command = f"lmplz -o {q_gram} --text {temp_text_file_path} --arpa {arpa_file} --discount_fallback"
+    binary_command = f"build_binary {arpa_file} {binary_file}"
+
+    if run_command(arpa_command, "Failed to generate ARPA model") and run_command(binary_command, "Failed to convert ARPA model to binary format"):
         Path(temp_text_file_path).unlink(missing_ok=True)
-        Path(temp_arpa_file_path).unlink(missing_ok=True)
         return binary_file
     else:
         Path(temp_text_file_path).unlink(missing_ok=True)
-        Path(temp_arpa_file_path).unlink(missing_ok=True)
         return None
 
 
