@@ -12,11 +12,12 @@ Shannon's experiments involved predicting the next letter in a sequence of text,
 
 ## Project Structure
 
-- `shannon_entro.py`: The main script that performs entropy and redundancy calculations on various English corpora sourced through NLTK.
-- `linearb_entro.py`: A secondary script that performs entropy and redundancy calculations on Linear B.
-- `Linear_B_Lexicon.csv`: The input corpus file containing Linear B words.
 - `entropy_model/`: Directory where trained KenLM models are stored.
+- `Linear_B_Lexicon.csv`: The input corpus file containing Linear B words.
+- `linearb_entro.py`: A secondary script that performs entropy and redundancy calculations on Linear B.
+- `Prediction_and_Entropy_of_Printed_English.pdf`: Shannon's original paper.
 - `README.md`: This document.
+- `shannon_entro.py`: The main script that performs entropy and redundancy calculations on various English corpora sourced through NLTK.
 
 ## Dependencies
 
