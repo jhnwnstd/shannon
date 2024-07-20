@@ -24,7 +24,6 @@ def ensure_directory_exists(directory_path):
     """Ensure the specified directory exists, creating it if necessary."""
     Path(directory_path).mkdir(parents=True, exist_ok=True)
 
-
 def run_command(command, error_message):
     """Run a shell command using subprocess, capturing and logging any errors."""
     try:
@@ -33,7 +32,6 @@ def run_command(command, error_message):
         logging.error(f"{error_message}: {e.stderr.decode()} (Exit code: {e.returncode})")
         return False
     return True
-
 
 def build_kenlm_model(text, model_directory, q_gram):
     """Build a KenLM language model from the specified text."""
@@ -57,7 +55,6 @@ def build_kenlm_model(text, model_directory, q_gram):
         Path(temp_text_file_path).unlink(missing_ok=True)
         return None
 
-
 def load_and_format_corpus(csv_path):
     """Load and format the Linear B corpus data."""
     df = pd.read_csv(csv_path)
@@ -74,7 +71,6 @@ def load_and_format_corpus(csv_path):
 
     return formatted_text, unique_words
 
-
 def calculate_entropy_kenlm(model, text):
     """Calculate the entropy of the text using the KenLM model."""
     if isinstance(text, list):
@@ -83,7 +79,6 @@ def calculate_entropy_kenlm(model, text):
     log_prob = model.score(text, bos=False, eos=False) / math.log(2)
     num_grams = max(len(text.split()) - Q_GRAMS, 1)  # Prevent division by zero
     return -log_prob / num_grams
-
 
 def calculate_unigram_entropy(text):
     """Calculate the first-order entropy (unigram entropy) of the text."""
@@ -96,7 +91,6 @@ def calculate_unigram_entropy(text):
     
     # Calculate entropy
     return -np.sum(probabilities * np.log2(probabilities))
-
 
 def calculate_H2(text):
     """
@@ -118,11 +112,9 @@ def calculate_H2(text):
     
     return H2
 
-
 def calculate_redundancy(H, H_max):
     """Calculate the redundancy of the text."""
     return (1 - H / H_max) * 100
-
 
 def process_linearb_corpus(corpus_path, q_gram):
     """Process the Linear B corpus to compute entropy and redundancy metrics."""
