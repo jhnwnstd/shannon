@@ -18,21 +18,17 @@ MODEL_DIR = Path.cwd() / "entropy_model"
 MODEL_DIR.mkdir(parents=True, exist_ok=True)
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 
-
 def ensure_directory_exists(directory_path):
     """Ensure the specified directory exists, creating it if necessary."""
     Path(directory_path).mkdir(parents=True, exist_ok=True)
-
 
 def ensure_corpus_available(corpus_name):
     """Ensure the specified NLTK corpus is available for use."""
     nltk.download(corpus_name, quiet=True)
 
-
 def clean_and_format_words(words):
     """Clean and format words by removing non-letter characters and converting to lowercase."""
     return [' '.join(reg.sub(r'[^\p{L}]', '', word).lower()) for word in words if len(word) >= 3]
-
 
 def run_command(command, error_message):
     """Run a shell command using subprocess, capturing and logging any errors."""
@@ -43,13 +39,12 @@ def run_command(command, error_message):
         return False
     return True
 
-
 def build_kenlm_model(text, model_directory, q_gram):
     """Build a KenLM language model from the specified text."""
     ensure_directory_exists(model_directory)
     
-    with tempfile.NamedTemporaryFile(delete=False) as temp_text_file:
-        temp_text_file.write(text.encode('utf-8'))
+    with tempfile.NamedTemporaryFile(delete=False, mode='w', encoding='utf-8') as temp_text_file:
+        temp_text_file.write(text)
         temp_text_file_path = temp_text_file.name
 
     corpus_name = Path(temp_text_file_path).stem
@@ -66,7 +61,6 @@ def build_kenlm_model(text, model_directory, q_gram):
         Path(temp_text_file_path).unlink(missing_ok=True)
         return None
 
-
 def calculate_entropy_kenlm(model, text):
     """Calculate the entropy of the text using the KenLM model."""
     if isinstance(text, list):
@@ -75,7 +69,6 @@ def calculate_entropy_kenlm(model, text):
     log_prob = model.score(text, bos=False, eos=False) / math.log(2)
     num_grams = max(len(text.split()) - Q_GRAMS, 1)  # Prevent division by zero
     return -log_prob / num_grams
-
 
 def calculate_unigram_entropy(text):
     """Calculate the first-order entropy (unigram entropy) of the text."""
@@ -88,7 +81,6 @@ def calculate_unigram_entropy(text):
     
     # Calculate entropy
     return -np.sum(probabilities * np.log2(probabilities))
-
 
 def calculate_H2(text):
     """
@@ -109,16 +101,35 @@ def calculate_H2(text):
     
     return H2
 
-
 def calculate_redundancy(H, H_max):
     """Calculate the redundancy of the text."""
     return (1 - H / H_max) * 100
 
+def load_text_file(file_path):
+    """
+    Load and process a text file, returning a list of words.
+    This method can be used to feed into process_single_corpus.
+    """
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            text = file.read()
+        # Split the text into words and clean
+        return clean_and_format_words(text.split())
+    except Exception as e:
+        logging.error(f"Error loading file {file_path}: {e}")
+        return []
 
-def process_single_corpus(corpus_name):
-    """Process a single NLTK corpus to compute entropy and redundancy metrics."""
-    ensure_corpus_available(corpus_name)
-    words = getattr(nltk.corpus, corpus_name).words()
+def process_single_corpus(corpus_name_or_words):
+    """Process a single NLTK corpus or list of words to compute entropy and redundancy metrics."""
+    if isinstance(corpus_name_or_words, str):
+        # It's an NLTK corpus name
+        ensure_corpus_available(corpus_name_or_words)
+        words = getattr(nltk.corpus, corpus_name_or_words).words()
+        corpus_name = corpus_name_or_words
+    else:
+        # It's already a list of words
+        words = corpus_name_or_words
+        corpus_name = "Custom Text"
 
     cleaned_words = clean_and_format_words(words)
     text_for_kenlm = '\n'.join(cleaned_words)
@@ -153,13 +164,21 @@ def process_single_corpus(corpus_name):
     else:
         logging.error(f"Failed to process corpus: {corpus_name}")
 
-
 def process_corpora(corpus_list):
     """Process a list of corpora to compute entropy and redundancy metrics for each."""
     for corpus_name in corpus_list:
         process_single_corpus(corpus_name)
 
-
 # Execute the main function
 if __name__ == "__main__":
+    # Process NLTK corpora
     process_corpora(['brown', 'reuters', 'webtext', 'inaugural', 'nps_chat', 'state_union', 'gutenberg'])
+
+    # Example of processing a text file
+    file_path = "example.txt"  # Replace with your text file path
+    if Path(file_path).exists():
+        words_from_file = load_text_file(file_path)
+        if words_from_file:
+            process_single_corpus(words_from_file)
+    else:
+        logging.error(f"File {file_path} not found.")

@@ -123,6 +123,7 @@ Redundancy: 63.61%
 
 - Shannon, C. E. (1951). Prediction and Entropy of Printed English. Bell System Technical Journal.
 - Shannon, C. E. (1948). A Mathematical Theory of Communication. Bell System Technical Journal.
+- https://linearb.xyz/
 
 ## License
 
