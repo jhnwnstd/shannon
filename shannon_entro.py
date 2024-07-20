@@ -148,7 +148,7 @@ def process_single_corpus(corpus_name_or_words):
         logging.info(f"\nCorpus: {corpus_name}")
         logging.info(f"Token Count: {len(words)}")
         logging.info(f"Vocab Count: {len(set(words))}")
-        logging.info(f"Alphabet Size: {len(alphabet)}")
+        logging.info(f'Grapheme Inventory Size: {len(alphabet):,}')
         logging.info(f"Zero-order approximation (H0): {H0:.2f}")
         logging.info(f"First-order approximation (H1): {H1:.2f}")
         logging.info(f"Second-order approximation (H2): {H2:.2f}")

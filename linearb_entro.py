@@ -138,7 +138,7 @@ def process_linearb_corpus(corpus_path, q_gram):
 
         logging.info("Linear B Corpus")
         logging.info(f"Vocab Count: {unique_words}")
-        logging.info(f'Alphabet Size: {len(letter_freq):,}')
+        logging.info(f'Grapheme Inventory Size: {len(letter_freq):,}')
         logging.info(f"Zero-order approximation (H0): {H0:.2f}")
         logging.info(f"First-order approximation (H1): {H1:.2f}")
         logging.info(f"Second-order approximation (H2): {H2:.2f}")
