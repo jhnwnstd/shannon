@@ -138,7 +138,7 @@ def process_linearb_corpus(corpus_path, q_gram):
 
         logging.info("Linear B Corpus")
         logging.info(f"Vocab Count: {unique_words}")
-        logging.info(f'Grapheme Inventory Size: {len(letter_freq):,}')
+        logging.info(f'Grapheme Inventory: {len(letter_freq):,}')
         logging.info(f"Zero-order Entropy (H0): {H0:.2f}")
         logging.info(f"First-order Entropy (H1): {H1:.2f}")
         logging.info(f"Second-order Entropy (H2): {H2:.2f}")

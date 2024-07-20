@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project implements a computational method for estimating the word-level entropy and redundancy of a language, inspired by the techniques described by Claude E. Shannon in his seminal paper, "Prediction and Entropy of Printed English" (1951). While Shannon's original work focused only on English, this project extends the methodology to analyze various English corpora as well as the Linear B script, an ancient script used for writing Mycenaean Greek.
+This project implements a computational method for estimating the word-level entropy and redundancy of a language, inspired by the techniques described by Claude E. Shannon in his paper, "Prediction and Entropy of Printed English" (1951). While Shannon's original work focused only on English, this project extends the methodology to analyze various English corpora as well as the Linear B script, a script used for writing Mycenaean Greek.
 
 ## Background
 
@@ -62,11 +62,11 @@ Shannon's experiments involved predicting the next letter in a sequence of text,
 3. **Output**:
    The scripts will log the results, including:
    - Vocabulary count
-   - Alphabet size
-   - Zero-order approximation (H0)
-   - First-order approximation (H1)
-   - Second-order approximation (H2)
-   - Third-order approximation (H3)
+   - Grapheme Inventory (Alphabet Size)
+   - Zero-order Entropy (H0)
+   - First-order Entropy (H1)
+   - Second-order Entropy (H2)
+   - Third-order Entropy (H3)
    - Redundancy percentage
 
 ## Methodology
@@ -99,11 +99,11 @@ Shannon's experiments involved predicting the next letter in a sequence of text,
 Corpus: brown
 Token Count: 1161192
 Vocab Count: 56057
-Alphabet Size: 26
-Zero-order approximation (H0): 4.70
-First-order approximation (H1): 4.18
-Second-order approximation (H2): 3.81
-Third-order approximation (H3) of 6-grams: 1.76
+Grapheme Inventory: 26
+Zero-order Entropy (H0): 4.70
+First-order Entropy (H1): 4.18
+Second-order Entropy (H2): 3.81
+Third-order Entropy (H3) of 6-grams: 1.76
 Redundancy: 62.52%
 ```
 
@@ -111,11 +111,11 @@ Redundancy: 62.52%
 ```
 Linear B Corpus
 Vocab Count: 2426
-Alphabet Size: 86
-Zero-order approximation (H0): 6.43
-First-order approximation (H1): 5.74
-Second-order approximation (H2): 4.02
-Third-order approximation (H3) of 6-grams: 2.34
+Grapheme Inventory: 86
+Zero-order Entropy (H0): 6.43
+First-order Entropy (H1): 5.74
+Second-order Entropy (H2): 4.02
+Third-order Entropy (H3) of 6-grams: 2.34
 Redundancy: 63.61%
 ```
 
