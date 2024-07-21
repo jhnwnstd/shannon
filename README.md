@@ -37,14 +37,17 @@ This project replicates Shannon's methodology using the KenLM library, a languag
    pip install pandas regex nltk numpy
    ```
 
-2. **Download NLTK Data**:
+2. **Install KenLM**:
+   Install the KenLM library by following the instructions on the [KenLM GitHub page](https://github.com/kpu/kenlm)
+
+3. **Download NLTK Data**:
    If using any NLTK corpora, ensure they are downloaded:
    ```python
    import nltk
    nltk.download('corpus_name')
    ```
 
-3. **Prepare Corpus**:
+4. **Prepare Corpus**:
    Place the `Linear_B_Lexicon.csv` file in the project directory. This file should contain the Linear B words to be analyzed.
 
 ## Usage
