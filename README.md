@@ -34,7 +34,7 @@ This project replicates Shannon's methodology using the KenLM library, a languag
 
 1. **Install Dependencies**:
    ```bash
-   pip install pandas regex kenlm nltk numpy
+   pip install pandas regex nltk numpy
    ```
 
 2. **Download NLTK Data**:
