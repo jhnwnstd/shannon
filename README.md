@@ -26,7 +26,7 @@ This project replicates Shannon's methodology using the KenLM, a language modeli
 - Python 3.11+
 - pandas
 - regex
-- kenlm (KenLM language model library)
+- kenlm (KenLM language model)
 - nltk
 - numpy
 
@@ -38,7 +38,7 @@ This project replicates Shannon's methodology using the KenLM, a language modeli
    ```
 
 2. **Install KenLM**:
-   Install the KenLM library by following the instructions on the [KenLM GitHub page](https://github.com/kpu/kenlm):
+   Install KenLM by following the instructions on the [KenLM GitHub page](https://github.com/kpu/kenlm):
    ```bash
    pip install https://github.com/kpu/kenlm/archive/master.zip
    ```
