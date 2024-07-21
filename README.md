@@ -38,7 +38,10 @@ This project replicates Shannon's methodology using the KenLM library, a languag
    ```
 
 2. **Install KenLM**:
-   Install the KenLM library by following the instructions on the [KenLM GitHub page](https://github.com/kpu/kenlm)
+   Install the KenLM library by following the instructions on the [KenLM GitHub page](https://github.com/kpu/kenlm):
+   ```bash
+   pip install https://github.com/kpu/kenlm/archive/master.zip
+   ```
 
 3. **Download NLTK Data**:
    If using any NLTK corpora, ensure they are downloaded:
@@ -83,13 +86,13 @@ This project replicates Shannon's methodology using the KenLM library, a languag
    A KenLM language model is trained on the formatted corpus. This model is used to calculate the entropy based on n-grams (sequences of n adjacent characters or glyphs).
 
 3. **Calculate Entropy**:
-   - **H0 (Zero-order approximation)**: Calculated using the logarithm of the alphabet size.
-   - **H1 (First-order approximation)**: Calculated using the frequencies of individual characters or glyphs.
-   - **H2 (Second-order approximation)**: Calculated using the probabilities of encountering the same character twice when randomly sampling. This is also known as collision (or Rényi) entropy and is given by the formula:
+   - **H0 (Zero-order Entropy)**: Calculated using the logarithm of the alphabet size.
+   - **H1 (First-order Entropy)**: Calculated using the frequencies of individual characters or glyphs.
+   - **H2 (Second-order Entropy)**: Calculated using the probabilities of encountering the same character twice when randomly sampling. This is also known as collision (or Rényi) entropy and is given by the formula:
      ```python
      H2 = -np.log2(np.sum(probabilities**2))
      ```
-   - **H3 (Third-order approximation)**: Calculated using the KenLM model to predict the next character or glyph in a sequence.
+   - **H3 (Third-order Entropy)**: Calculated using the KenLM model to predict the next character or glyph in a sequence.
 
 4. **Calculate Redundancy**:
    Redundancy is calculated as the percentage reduction in entropy due to the language's statistical structure:
@@ -128,6 +131,7 @@ Redundancy: 63.61%
 
 - Shannon, C. E. (1951). Prediction and Entropy of Printed English. Bell System Technical Journal.
 - Shannon, C. E. (1948). A Mathematical Theory of Communication. Bell System Technical Journal.
+- [KenLM Documentation](https://kheafield.com/code/kenlm/)
 - https://linearb.xyz/
 
 ## License
