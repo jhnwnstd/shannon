@@ -8,7 +8,9 @@ This project implements a computational method for estimating the word-level ent
 
 In his 1951 paper, Shannon introduced a method to estimate the entropy and redundancy of a language by leveraging the predictability of characters based on preceding text. Entropy is a measure of the average information content per symbol, while redundancy indicates the degree to which a language constrains or structures its text, making some sequences more predictable than others.
 
-Shannon's experiments involved predicting the next letter in a sequence of text, and he used this predictability to calculate entropy. This project replicates Shannon's methodology using modern computational tools and applies it to various English corpora and the Linear B script.
+Shannon's experiments involved predicting the next letter in a sequence of text, and he used this predictability to calculate entropy. Entropy measures the average amount of information produced by each letter of the text. Higher predictability means lower entropy because the next letter can be guessed with higher accuracy, resulting in less new information.
+
+This project replicates Shannon's methodology using the KenLM library, a language modeling tool that allows us to build n-gram models to predict the next character in a sequence based on the preceding characters. By applying this methodology, we can analyze and compute the entropy and redundancy of various English corpora and the Linear B script.
 
 ## Project Structure
 
@@ -97,8 +99,8 @@ Shannon's experiments involved predicting the next letter in a sequence of text,
 ### English Corpus (Brown)
 ```
 Corpus: brown
-Token Count: 1161192
-Vocab Count: 56057
+Token Count: 1,161,192
+Vocab Count: 56,057
 Grapheme Inventory: 26
 Zero-order Entropy (H0): 4.70
 First-order Entropy (H1): 4.18
@@ -110,7 +112,7 @@ Redundancy: 62.52%
 ### Linear B Corpus
 ```
 Linear B Corpus
-Vocab Count: 2426
+Vocab Count: 2,426
 Grapheme Inventory: 86
 Zero-order Entropy (H0): 6.43
 First-order Entropy (H1): 5.74
