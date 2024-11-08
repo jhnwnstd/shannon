@@ -1,25 +1,28 @@
-# README
+# Shannon Entropy Analysis Project
 
 ## Overview
 
-This project implements a computational method for estimating the word-level entropy and redundancy of a language, inspired by the techniques described by Claude E. Shannon in his paper, "Prediction and Entropy of Printed English" (1951). While Shannon's original work focused only on English, this project extends the methodology to analyze various English corpora as well as the Linear B script, the writing system for Mycenaean Greek.
+This project implements a computational method for estimating the word-level entropy and redundancy of languages, inspired by Claude E. Shannon's paper, "Prediction and Entropy of Printed English" (1951). While Shannon's original work focused only on English, this project extends the methodology to analyze:
+- Multiple English corpora (Brown, Reuters, Webtext, etc.)
+- European languages from the Europarl corpus
+- The Linear B script (writing system for Mycenaean Greek)
 
 ## Background
 
-In his 1951 paper, Shannon introduced a method to estimate the entropy and redundancy of a language by leveraging the predictability of characters based on preceding text. Entropy is a measure of the average information content per symbol, while redundancy indicates the degree to which a language constrains or structures its text, making some sequences more predictable than others.
+In his 1951 paper, Shannon introduced a method to estimate the entropy and redundancy of a language by leveraging the predictability of characters based on preceding text. Entropy measures the average information content per symbol, while redundancy indicates the degree to which a language constrains or structures its text, making some sequences more predictable than others.
 
-Shannon's experiments involved predicting the next letter in a sequence of text, and he used this predictability to calculate the entropy. Entropy measures the average amount of information produced by each letter of the text. Higher predictability means lower entropy because the next letter can be guessed with higher accuracy, resulting in less new information.
+Shannon's experiments involved predicting the next letter in a sequence of text, and he used this predictability to calculate entropy. Higher predictability means lower entropy because the next letter can be guessed with higher accuracy, resulting in less new information.
 
-This project replicates Shannon's methodology using the KenLM, a language modeling tool that allows us to build n-gram models to predict the next character in a sequence based on the preceding characters. By applying this methodology, we can analyze and compute the entropy and redundancy of various English corpora and the Linear B script.
+This project replicates and extends Shannon's methodology using KenLM, a modern language modeling tool that builds n-gram models to predict the next character in a sequence based on preceding characters.
 
 ## Project Structure
 
-- `entropy_model/`: Directory where trained KenLM models are stored.
-- `Linear_B_Lexicon.csv`: The input corpus file containing Linear B words.
-- `linearb_entro.py`: A secondary script that performs entropy and redundancy calculations on Linear B.
-- `Prediction_and_Entropy_of_Printed_English.pdf`: Shannon's original paper.
-- `README.md`: This document.
-- `shannon_entro.py`: The main script that performs entropy and redundancy calculations on various English corpora sourced through NLTK.
+- `entropy_model/`: Directory for trained KenLM models
+- `Linear_B_Lexicon.csv`: Input corpus file containing Linear B words
+- `linearb_entro.py`: Script for Linear B and European language analysis
+- `shannon_entro.py`: Script for English corpora analysis
+- `Prediction_and_Entropy_of_Printed_English.pdf`: Shannon's original paper
+- `README.md`: This document
 
 ## Dependencies
 
@@ -38,94 +41,104 @@ This project replicates Shannon's methodology using the KenLM, a language modeli
    ```
 
 2. **Install KenLM**:
-   Install KenLM by following the instructions on the [KenLM GitHub page](https://github.com/kpu/kenlm):
    ```bash
    pip install https://github.com/kpu/kenlm/archive/master.zip
    ```
 
 3. **Download NLTK Data**:
-   If using any NLTK corpora, ensure they are downloaded:
    ```python
    import nltk
-   nltk.download('corpus_name')
+   nltk.download(['brown', 'reuters', 'webtext', 'inaugural', 
+                 'nps_chat', 'state_union', 'gutenberg', 'europarl_raw'])
    ```
 
 4. **Prepare Corpus**:
-   Place the `Linear_B_Lexicon.csv` file in the project directory. This file should contain the Linear B words to be analyzed.
+   Place `Linear_B_Lexicon.csv` in the project directory.
 
 ## Usage
 
-1. **Run the English Corpora Script**:
-   Execute the script to process English corpora and calculate entropy and redundancy:
+1. **Analyze English Corpora**:
    ```bash
    python shannon_entro.py
    ```
 
-2. **Run the Linear B Script**:
-   Execute the script to process the Linear B corpus and calculate entropy and redundancy:
+2. **Analyze Linear B and European Languages**:
    ```bash
    python linearb_entro.py
    ```
 
-3. **Output**:
-   The scripts will log the results, including:
-   - Vocabulary count
-   - Grapheme Inventory (Alphabet Size)
-   - Zero-order Entropy (H0)
-   - First-order Entropy (H1)
-   - Second-order Entropy (H2)
-   - Third-order Entropy (H3)
-   - Redundancy percentage
-
 ## Methodology
 
 1. **Load and Format Corpus**:
-   The scripts read the respective corpus files and format the words by removing duplicates and cleaning the text using regular expressions to match the appropriate characters (Latin letters for English, Linear B glyphs for Linear B).
+   - Clean text using language-specific character filters
+   - Handle special characters and diacritics
+   - Support Unicode ranges for Linear B (U+10000 to U+100FF)
+   - Remove duplicates and non-character content
 
 2. **Build KenLM Model**:
-   A KenLM language model is trained on the formatted corpus. This model is used to calculate the entropy based on n-grams (sequences of n adjacent characters or glyphs).
+   - Create 8-gram language models
+   - Process text as character sequences
+   - Generate both ARPA and binary model formats
 
 3. **Calculate Entropy**:
-   - **H0 (Zero-order Entropy)**: Calculated using the logarithm of the alphabet size.
-   - **H1 (First-order Entropy)**: Calculated using the frequencies of individual characters or glyphs.
-   - **H2 (Second-order Entropy)**: Calculated using the probabilities of encountering the same character twice when randomly sampling. This is also known as collision (or Rényi) entropy and is given by the formula:
-     ```python
-     H2 = -np.log2(np.sum(probabilities**2))
-     ```
-   - **H3 (Third-order Entropy)**: Calculated using the KenLM model to predict the next character or glyph in a sequence.
+   - **H0 (Zero-order)**: `log2(alphabet_size)`
+   - **H1 (First-order)**: Unigram frequencies
+   - **H2 (Second-order/Rényi)**: `-log2(sum(probabilities²))`
+   - **H3 (Third-order)**: Using KenLM 8-gram predictions
 
 4. **Calculate Redundancy**:
-   Redundancy is calculated as the percentage reduction in entropy due to the language's statistical structure:
    ```python
    redundancy = (1 - H3 / H0) * 100
    ```
 
-## Example Output
+## Findings
 
-### English Corpus (Brown)
-```
-Corpus: brown
-Token Count: 1,161,192
-Vocab Count: 56,057
-Grapheme Inventory: 26
-Zero-order Entropy (H0): 4.70
-First-order Entropy (H1): 4.18
-Second-order Entropy (H2): 3.81
-Third-order Entropy (H3) of 6-grams: 1.76
-Redundancy: 62.52%
-```
+### European Languages Analysis
 
-### Linear B Corpus
-```
-Linear B Corpus
-Vocab Count: 2,426
-Grapheme Inventory: 86
-Zero-order Entropy (H0): 6.43
-First-order Entropy (H1): 5.74
-Second-order Entropy (H2): 4.02
-Third-order Entropy (H3) of 6-grams: 2.34
-Redundancy: 63.61%
-```
+| Language | Grapheme Inventory | H0 | H1 | H2 | H3 | Redundancy |
+|----------|-------------------|-----|-----|-----|-----|------------|
+| Linear B | 86 | 6.43 | 5.74 | 5.46 | 2.34 | 63.54% |
+| English (Europarl) | 26 | 4.70 | 4.14 | 3.89 | 1.60 | 65.94% |
+| French | 39 | 5.29 | 4.13 | 3.85 | 1.63 | 69.08% |
+| German | 30 | 4.91 | 4.17 | 3.78 | 1.39 | 71.68% |
+| Italian | 35 | 5.13 | 4.02 | 3.76 | 1.62 | 68.46% |
+| Greek | 24 | 4.58 | 4.16 | 3.96 | 1.80 | 60.64% |
+| Spanish | 33 | 5.04 | 4.14 | 3.85 | 1.64 | 67.45% |
+| Dutch | 28 | 4.81 | 4.09 | 3.70 | 1.40 | 70.82% |
+
+### English Corpus Comparison
+
+| Corpus | Token Count | Vocab Count | H0 | H1 | H2 | H3 | Redundancy |
+|--------|-------------|-------------|-----|-----|-----|-----|------------|
+| Brown | 4,369,721 | 46,018 | 4.70 | 4.18 | 3.93 | 1.63 | 65.39% |
+| Reuters | 5,845,812 | 28,835 | 4.75 | 4.19 | 3.95 | 1.80 | 62.08% |
+| Webtext | 1,193,886 | 16,303 | 5.13 | 4.27 | 4.06 | 1.72 | 66.50% |
+| Inaugural | 593,092 | 9,155 | 4.75 | 4.15 | 3.88 | 1.63 | 65.81% |
+| State Union | 1,524,983 | 12,233 | 4.81 | 4.16 | 3.91 | 1.67 | 65.17% |
+| Gutenberg | 8,123,136 | 41,350 | 4.91 | 4.16 | 3.91 | 1.83 | 62.70% |
+
+### Key Findings
+
+1. **Writing System Complexity**
+   - Linear B's large grapheme inventory (86) yields higher absolute entropy
+   - Redundancy remains comparable to modern languages (63.54%)
+   - Suggests information encoding efficiency is independent of writing system complexity
+
+2. **Language Family Patterns**
+   - Germanic languages show highest redundancy (German: 71.68%, Dutch: 70.82%)
+   - Romance languages show moderate redundancy (65-69%)
+   - Modern Greek shows lowest redundancy (60.64%)
+   - Suggests systematic differences in information encoding across language families
+
+3. **Corpus Effects**
+   - English shows consistent redundancy (62-66%) across different corpora
+   - Larger corpora (>5M tokens) tend toward slightly lower redundancy
+   - Validates methodology's reliability for cross-linguistic comparison
+
+4. **Information Structure**
+   - All languages show consistent entropy reduction pattern (H0 > H1 > H2 > H3)
+   - Rate of reduction varies by language family
+   - Suggests universal principles in linguistic information structure
 
 ## References
 
@@ -140,4 +153,4 @@ This project is licensed under the MIT License.
 
 ## Acknowledgements
 
-Special thanks to Claude E. Shannon for his groundbreaking work in information theory, which serves as the foundation for this project. Additionally, I extend a heartfelt thank you to Alice Kober for her meticulous and pioneering work deciphering the Linear B script. I stand on the shoulders of giants.
+Special thanks to Claude E. Shannon for his groundbreaking work in information theory and to Alice Kober for her pioneering work deciphering the Linear B script. The project also builds upon the excellent KenLM language modeling toolkit and NLTK's comprehensive corpus collection.
