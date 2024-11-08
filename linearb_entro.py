@@ -14,7 +14,7 @@ import nltk
 from nltk.corpus import europarl_raw, brown
 
 # Configuration
-Q_GRAMS = 6  # KenLM model n-gram level
+Q_GRAMS = 8  # KenLM model n-gram level
 MODEL_DIR = Path.cwd() / "entropy_model"
 CORPUS_PATH = Path.cwd() / "Linear_B_Lexicon.csv"
 
@@ -196,22 +196,42 @@ def calculate_entropy_kenlm(model, text):
     num_grams = max(len(text.split()) - Q_GRAMS + 1, 1)  # Correct formula for n-grams
     return -log_prob / num_grams
 
-def calculate_unigram_entropy(text, letter_filter):
-    """Calculate the first-order entropy (unigram entropy) of the text."""
+def calculate_unigram_entropy(text, letter_filter, corpus_name):
+    """
+    Calculate the first-order entropy (unigram entropy) of the text.
+    
+    Parameters:
+    - text (str): The text to analyze.
+    - letter_filter (callable): Function to filter valid letters.
+    - corpus_name (str): Name of the corpus being processed.
+    
+    Returns:
+    - float: Calculated unigram entropy.
+    """
     # Keep only letters based on the provided filter
     text = ''.join(filter(letter_filter, text))
+    
     # Convert to lowercase if not Linear B
-    if letter_filter != get_letter_filter('linear_b'):
+    if corpus_name.lower() != 'linear_b':
         text = text.lower()
+    
     # Count letter frequencies
     unigram_freq = Counter(text)
-    
-    # Convert frequencies to probabilities
     total_unigrams = sum(unigram_freq.values())
-    probabilities = np.array(list(unigram_freq.values())) / total_unigrams if total_unigrams > 0 else np.array([])
+    
+    # Calculate probabilities
+    if total_unigrams > 0:
+        probabilities = np.array(list(unigram_freq.values())) / total_unigrams
+    else:
+        probabilities = np.array([])
     
     # Calculate entropy
-    return -np.sum(probabilities * np.log2(probabilities)) if probabilities.size > 0 else 0
+    if probabilities.size > 0:
+        entropy = -np.sum(probabilities * np.log2(probabilities))
+    else:
+        entropy = 0
+    
+    return entropy
 
 def calculate_H2(text, letter_filter):
     """
@@ -277,7 +297,7 @@ def process_corpus(corpus_name, q_gram):
         letter_freq = Counter(text_letters)
         
         H_max = math.log2(len(unique_letters_set)) if len(unique_letters_set) > 0 else 0
-        H1 = calculate_unigram_entropy(formatted_text, letter_filter)
+        H1 = calculate_unigram_entropy(formatted_text, letter_filter, corpus_name)
         H2 = calculate_H2(formatted_text, letter_filter)
         H3_kenlm = calculate_entropy_kenlm(model, lines)  # Correct H3 calculation
         redundancy = calculate_redundancy(H3_kenlm, H_max) if H_max > 0 else 0
