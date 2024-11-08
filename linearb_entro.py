@@ -135,18 +135,28 @@ def load_and_format_linearb_corpus(csv_path):
     return formatted_text, vocab_count, unique_letters
 
 def load_and_format_brown_corpus():
-    """Load and format the Brown corpus data."""
+    """Load and format the Brown corpus data for standardized entropy and redundancy calculations."""
+    corpus_name = 'brown'
+    letter_filter = get_letter_filter(corpus_name)  # Retrieve the appropriate letter filter for Brown corpus
     corpus_sents = brown.sents()
     formatted_letters = []
     all_chars = []  # To collect all characters for unique_letters
-
+    
     for sent in corpus_sents:
         for word in sent:
-            # Treat each letter as a separate token
-            letters = ' '.join(list(word))
-            formatted_letters.append(letters)
-            all_chars.extend(list(word))  # Collect letters
-
+            # Remove non-letter characters using regex
+            cleaned_word = reg.sub(r'[^\p{L}]', '', word)
+            if len(cleaned_word) >= 3:
+                # Convert to lowercase (Brown corpus is not Linear B)
+                cleaned_word = cleaned_word.lower()
+                # Filter letters based on the letter_filter function
+                filtered_letters = ''.join([char for char in cleaned_word if letter_filter(char)])
+                if filtered_letters:
+                    # Treat each letter as a separate token by joining with spaces
+                    letters = ' '.join(filtered_letters)
+                    formatted_letters.append(letters)
+                    all_chars.extend(filtered_letters)  # Collect letters for unique_letters count
+    
     # Join all letters across words with newline to preserve word boundaries
     formatted_text = '\n'.join(formatted_letters)
     
@@ -159,8 +169,22 @@ def load_and_format_brown_corpus():
     return formatted_text, vocab_count, unique_letters
 
 def load_and_format_europarl_corpus(language):
-    """Load and format the Europarl corpus data for the specified language."""
+    """
+    Load and format the Europarl corpus data for the specified language.
+
+    Parameters:
+    - language (str): The language of the Europarl corpus to process (e.g., 'english', 'french').
+
+    Returns:
+    - formatted_text (str): Text formatted for KenLM, with each letter separated by spaces and words separated by newlines.
+    - vocab_count (int): Number of unique words in the corpus.
+    - unique_letters (int): Number of unique letters (graphemes) in the corpus.
+    """
+    corpus_name = language.lower()
+    letter_filter = get_letter_filter(corpus_name)  # Retrieve the appropriate letter filter for the language
+
     try:
+        # Load sentences from the specified language's Europarl corpus
         corpus_sents = getattr(europarl_raw, language).sents()
     except AttributeError:
         logging.error(f"Language '{language}' not found in europarl_raw corpus.")
@@ -171,20 +195,29 @@ def load_and_format_europarl_corpus(language):
 
     for sent in corpus_sents:
         for word in sent:
-            # Treat each letter as a separate token
-            letters = ' '.join(list(word))
-            formatted_letters.append(letters)
-            all_chars.extend(list(word))  # Collect letters
+            # Remove non-letter characters using regex
+            cleaned_word = reg.sub(r'[^\p{L}]', '', word)
+            if len(cleaned_word) >= 3:
+                # Convert to lowercase (Europarl languages are not Linear B)
+                cleaned_word = cleaned_word.lower()
+                # Filter letters based on the letter_filter function
+                filtered_letters = ''.join([char for char in cleaned_word if letter_filter(char)])
+                if filtered_letters:
+                    # Treat each letter as a separate token by joining with spaces
+                    letters = ' '.join(filtered_letters)
+                    formatted_letters.append(letters)
+                    all_chars.extend(filtered_letters)  # Collect letters for unique_letters count
 
     # Join all letters across words with newline to preserve word boundaries
     formatted_text = '\n'.join(formatted_letters)
-    
+
     # Unique Letters Count
     unique_letters = len(set(all_chars))
-    
-    # Vocab Count as number of unique words
-    vocab_count = len(set(word for sent in corpus_sents for word in sent))
-    
+
+    # Vocab Count as number of unique words (case-insensitive)
+    # Since words are already lowercased and cleaned, no need to lower again
+    vocab_count = len(set(word for sent in corpus_sents for word in sent if len(reg.sub(r'[^\p{L}]', '', word)) >=3))
+
     return formatted_text, vocab_count, unique_letters
 
 def calculate_entropy_kenlm(model, text):
