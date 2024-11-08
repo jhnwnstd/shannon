@@ -219,19 +219,22 @@ def calculate_H2(text, letter_filter):
     """
     # Keep only letters based on the provided filter
     text = ''.join(filter(letter_filter, text))
-    # Convert to lowercase if not Linear B
-    if letter_filter != get_letter_filter('linear_b'):
-        text = text.lower()
     
     # Count letter frequencies
     char_freq = Counter(text)
     total_chars = len(text)
     
     # Calculate probabilities
-    probabilities = np.array([count / total_chars for count in char_freq.values()]) if total_chars > 0 else np.array([])
+    if total_chars > 0:
+        probabilities = np.array(list(char_freq.values())) / total_chars
+    else:
+        probabilities = np.array([])
     
     # Calculate H2
-    H2 = -np.log2(np.sum(probabilities**2)) if probabilities.size > 0 else 0
+    if probabilities.size > 0:
+        H2 = -np.log2(np.sum(probabilities**2))
+    else:
+        H2 = 0
     
     return H2
 
