@@ -82,7 +82,7 @@ This project replicates and extends Shannon's methodology using KenLM, a modern 
 
 3. **Calculate Entropy**:
    - **H0 (Zero-order)**: `log2(alphabet_size)`
-   - **H1 (First-order)**: Unigram frequencies
+   - **H1 (First-order)**: Unigram frequency-based entropy
    - **H2 (Second-order/Rényi)**: `-log2(sum(probabilities²))`
    - **H3 (Third-order)**: Using KenLM 8-gram predictions
 
