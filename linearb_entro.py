@@ -233,25 +233,32 @@ def calculate_unigram_entropy(text, letter_filter, corpus_name):
     
     return entropy
 
-def calculate_H2(text, letter_filter):
+def calculate_H2(text, letter_filter, corpus_name):
     """
     Calculate the Rényi entropy of order 2 (H2).
+    
+    Parameters:
+    - text (str): The text to analyze.
+    - letter_filter (callable): Function to filter valid letters.
+    - corpus_name (str): Name of the corpus being processed.
+    
+    Returns:
+    - float: Calculated H2 value in bits.
     """
     # Keep only letters based on the provided filter
-    text = ''.join(filter(letter_filter, text))
+    filtered_text = ''.join(filter(letter_filter, text))
+    
+    # Convert to lowercase if not Linear B
+    if corpus_name.lower() != 'linear_b':
+        filtered_text = filtered_text.lower()
     
     # Count letter frequencies
-    char_freq = Counter(text)
-    total_chars = len(text)
+    char_freq = Counter(filtered_text)
+    total_chars = len(filtered_text)
     
     # Calculate probabilities
     if total_chars > 0:
         probabilities = np.array(list(char_freq.values())) / total_chars
-    else:
-        probabilities = np.array([])
-    
-    # Calculate H2
-    if probabilities.size > 0:
         H2 = -np.log2(np.sum(probabilities**2))
     else:
         H2 = 0
@@ -298,7 +305,7 @@ def process_corpus(corpus_name, q_gram):
         
         H_max = math.log2(len(unique_letters_set)) if len(unique_letters_set) > 0 else 0
         H1 = calculate_unigram_entropy(formatted_text, letter_filter, corpus_name)
-        H2 = calculate_H2(formatted_text, letter_filter)
+        H2 = calculate_H2(formatted_text, letter_filter, corpus_name)
         H3_kenlm = calculate_entropy_kenlm(model, lines)  # Correct H3 calculation
         redundancy = calculate_redundancy(H3_kenlm, H_max) if H_max > 0 else 0
         
