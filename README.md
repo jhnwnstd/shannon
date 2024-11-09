@@ -2,18 +2,18 @@
 
 ## Overview
 
-This project implements a computational method for estimating the word-level entropy and redundancy of languages, inspired by Claude E. Shannon's paper, "Prediction and Entropy of Printed English" (1951). While Shannon's original work focused only on English, this project extends the methodology to analyze:
+This project implements a computational method for estimating language word-level entropy and redundancy, inspired by Claude E. Shannon's paper, "Prediction and Entropy of Printed English" (1951). While Shannon's original work focused only on English, this project extends the methodology to analyze:
 - Multiple English corpora (Brown, Reuters, Webtext, etc.)
 - European languages from the Europarl corpus
 - The Linear B script (writing system for Mycenaean Greek)
 
 ## Background
 
-In his 1951 paper, Shannon introduced a method to estimate the entropy and redundancy of a language by leveraging the predictability of characters based on preceding text. Entropy measures the average information content per symbol, while redundancy indicates the degree to which a language constrains or structures its text, making some sequences more predictable than others.
+In his 1951 paper, Shannon introduced a method to estimate a language's entropy and redundancy by leveraging the predictability of characters based on preceding text. Entropy measures the average information content per symbol, while redundancy indicates the degree to which a language constrains or structures its text, making some sequences more predictable.
 
 Shannon's experiments involved predicting the next letter in a sequence of text, and he used this predictability to calculate entropy. Higher predictability means lower entropy because the next letter can be guessed with higher accuracy, resulting in less new information.
 
-This project replicates and extends Shannon's methodology using KenLM, a modern language modeling tool that builds n-gram models to predict the next character in a sequence based on preceding characters.
+This project replicates and extends Shannon's methodology using KenLM. This modern language modeling tool builds n-gram models to predict the next character in a sequence based on preceding characters.
 
 ## Project Structure
 
@@ -36,60 +36,60 @@ This project replicates and extends Shannon's methodology using KenLM, a modern 
 ## Setup
 
 1. **Install Dependencies**:
-   ```bash
-   pip install pandas regex nltk numpy
-   ```
+ ```bash
+   pip install pandas regex nltk numpy
+ ```
 
 2. **Install KenLM**:
-   ```bash
-   pip install https://github.com/kpu/kenlm/archive/master.zip
-   ```
+ ```bash
+   pip install https://github.com/kpu/kenlm/archive/master.zip
+ ```
 
 3. **Download NLTK Data**:
-   ```python
-   import nltk
-   nltk.download(['brown', 'reuters', 'webtext', 'inaugural', 
-                 'nps_chat', 'state_union', 'gutenberg', 'europarl_raw'])
-   ```
+ ```python
+   import nltk
+   nltk.download(['brown', 'reuters', 'webtext', 'inaugural', 
+                 'nps_chat', 'state_union', 'gutenberg', 'europarl_raw'])
+ ```
 
 4. **Prepare Corpus**:
-   Place `Linear_B_Lexicon.csv` in the project directory.
+ Place `Linear_B_Lexicon.csv` in the project directory.
 
 ## Usage
 
 1. **Analyze English Corpora**:
-   ```bash
-   python shannon_entro.py
-   ```
+ ```bash
+   python shannon_entro.py
+ ```
 
 2. **Analyze Linear B and European Languages**:
-   ```bash
-   python linearb_entro.py
-   ```
+ ```bash
+   python linearb_entro.py
+ ```
 
 ## Methodology
 
 1. **Load and Format Corpus**:
-   - Clean text using language-specific character filters
-   - Handle special characters and diacritics
-   - Support Unicode ranges for Linear B (U+10000 to U+100FF)
-   - Remove duplicates and non-character content
+   - Clean text using language-specific character filters
+   - Handle special characters and diacritics
+   - Support Unicode ranges for Linear B (U+10000 to U+100FF)
+   - Remove duplicates and non-character content
 
 2. **Build KenLM Model**:
-   - Create 8-gram language models
-   - Process text as character sequences
-   - Generate both ARPA and binary model formats
+   - Create 8-gram language models
+   - Process text as character sequences
+   - Generate both ARPA and binary model formats
 
 3. **Calculate Entropy**:
-   - **H0 (Zero-order)**: `log2(alphabet_size)`
-   - **H1 (First-order)**: Unigram frequency-based entropy
-   - **H2 (Second-order/Rényi)**: `-log2(sum(probabilities²))`
-   - **H3 (Third-order)**: Using KenLM 8-gram predictions
+   - **H0 (Zero-order)**: `log2(alphabet_size)`
+   - **H1 (First-order)**: Unigram frequency-based entropy
+   - **H2 (Second-order/Rényi)**: `-log2(sum(probabilities²))`
+   - **H3 (Third-order)**: Using KenLM 8-gram predictions
 
 4. **Calculate Redundancy**:
-   ```python
-   redundancy = (1 - H3 / H0) * 100
-   ```
+ ```python
+   redundancy = (1 - H3 / H0) * 100
+ ```
 
 ## Findings
 
@@ -120,25 +120,25 @@ This project replicates and extends Shannon's methodology using KenLM, a modern 
 ### Key Findings
 
 1. **Writing System Complexity**
-   - Linear B's large grapheme inventory (86) yields higher absolute entropy
-   - Redundancy remains comparable to modern languages (63.54%)
-   - Suggests information encoding efficiency is independent of writing system complexity
+   - Linear B's large grapheme inventory (86) yields higher absolute entropy
+   - Redundancy remains comparable to modern languages (63.54%)
+   - Suggests information encoding efficiency is independent of writing system complexity
 
 2. **Language Family Patterns**
-   - Germanic languages show highest redundancy (German: 71.68%, Dutch: 70.82%)
-   - Romance languages show moderate redundancy (65-69%)
-   - Modern Greek shows lowest redundancy (60.64%)
-   - Suggests systematic differences in information encoding across language families
+   - Germanic languages show highest redundancy (German: 71.68%, Dutch: 70.82%)
+   - Romance languages show moderate redundancy (65-69%)
+   - Modern Greek shows the lowest redundancy (60.64%)
+   - Suggests systematic differences in information encoding across language families
 
 3. **Corpus Effects**
-   - English shows consistent redundancy (62-66%) across different corpora
-   - Larger corpora (>5M tokens) tend toward slightly lower redundancy
-   - Validates methodology's reliability for cross-linguistic comparison
+   - English shows consistent redundancy (62-66%) across different corpora
+   - Larger corpora (>5M tokens) tend toward slightly lower redundancy
+   - Validates methodology's reliability for cross-linguistic comparison
 
 4. **Information Structure**
-   - All languages show consistent entropy reduction pattern (H0 > H1 > H2 > H3)
-   - Rate of reduction varies by language family
-   - Suggests universal principles in linguistic information structure
+   - All languages show consistent entropy reduction pattern (H0 > H1 > H2 > H3)
+   - Rate of reduction varies by language family
+   - Suggests universal principles in linguistic information structure
 
 ## References
 
