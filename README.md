@@ -92,55 +92,59 @@ This project replicates and extends Shannon's methodology using KenLM. This mode
    redundancy = (1 - H3 / H0) * 100
  ```
 
-## Findings
+### Findings
 
 ### European Languages Analysis
 
-| Language | Grapheme Inventory | H0 | H1 | H2 | H3 | Redundancy |
-|----------|-------------------|-----|-----|-----|-----|------------|
-| Linear B | 86 | 6.43 | 5.74 | 5.46 | 2.34 | 63.54% |
-| English (Europarl) | 26 | 4.70 | 4.14 | 3.89 | 1.60 | 65.94% |
-| French | 39 | 5.29 | 4.13 | 3.85 | 1.63 | 69.08% |
-| German | 30 | 4.91 | 4.17 | 3.78 | 1.39 | 71.68% |
-| Italian | 35 | 5.13 | 4.02 | 3.76 | 1.62 | 68.46% |
-| Greek | 24 | 4.58 | 4.16 | 3.96 | 1.80 | 60.64% |
-| Spanish | 33 | 5.04 | 4.14 | 3.85 | 1.64 | 67.45% |
-| Dutch | 28 | 4.81 | 4.09 | 3.70 | 1.40 | 70.82% |
+| Language     | Grapheme Inventory | H0   | H1   | H2   | H3   | Redundancy |
+|--------------|--------------------|------|------|------|------|------------|
+| Linear B     | 86                 | 6.43 | 5.74 | 5.46 | 2.34 | 63.54%     |
+| English (Europarl) | 26          | 4.70 | 4.14 | 3.89 | 1.60 | 65.94%     |
+| French       | 39                 | 5.29 | 4.13 | 3.85 | 1.63 | 69.08%     |
+| German       | 30                 | 4.91 | 4.17 | 3.78 | 1.39 | 71.68%     |
+| Italian      | 35                 | 5.13 | 4.02 | 3.76 | 1.62 | 68.46%     |
+| Greek        | 24                 | 4.58 | 4.16 | 3.96 | 1.80 | 60.64%     |
+| Spanish      | 33                 | 5.04 | 4.14 | 3.85 | 1.64 | 67.45%     |
+| Dutch        | 28                 | 4.81 | 4.09 | 3.70 | 1.40 | 70.82%     |
+| Portuguese   | 39                 | 5.24 | 4.19 | 3.09 | 1.63 | 68.91%     |
+| Swedish      | 29                 | 4.85 | 4.24 | 3.20 | 1.48 | 69.63%     |
+| Danish       | 27                 | 4.85 | 4.14 | 3.17 | 1.41 | 70.97%     |
+| Finnish      | 29                 | 5.10 | 4.00 | 3.26 | 1.38 | 75.09%     |
 
 ### English Corpus Comparison
 
-| Corpus | Token Count | Vocab Count | H0 | H1 | H2 | H3 | Redundancy |
-|--------|-------------|-------------|-----|-----|-----|-----|------------|
-| Brown | 4,369,721 | 46,018 | 4.70 | 4.18 | 3.93 | 1.63 | 65.39% |
-| Reuters | 5,845,812 | 28,835 | 4.75 | 4.19 | 3.95 | 1.80 | 62.08% |
-| Webtext | 1,193,886 | 16,303 | 5.13 | 4.27 | 4.06 | 1.72 | 66.50% |
-| Inaugural | 593,092 | 9,155 | 4.75 | 4.15 | 3.88 | 1.63 | 65.81% |
-| State Union | 1,524,983 | 12,233 | 4.81 | 4.16 | 3.91 | 1.67 | 65.17% |
-| Gutenberg | 8,123,136 | 41,350 | 4.91 | 4.16 | 3.91 | 1.83 | 62.70% |
+| Corpus       | Token Count | Vocab Count | H0   | H1   | H2   | H3   | Redundancy |
+|--------------|-------------|-------------|------|------|------|------|------------|
+| Brown        | 4,369,721   | 46,018      | 4.70 | 4.18 | 3.93 | 1.63 | 65.39%     |
+| Reuters      | 5,845,812   | 28,835      | 4.75 | 4.19 | 3.95 | 1.80 | 62.08%     |
+| Webtext      | 1,193,886   | 16,303      | 5.13 | 4.27 | 4.06 | 1.72 | 66.50%     |
+| Inaugural    | 593,092     | 9,155       | 4.75 | 4.15 | 3.88 | 1.63 | 65.81%     |
+| State Union  | 1,524,983   | 12,233      | 4.81 | 4.16 | 3.91 | 1.67 | 65.17%     |
+| Gutenberg    | 8,123,136   | 41,350      | 4.91 | 4.16 | 3.91 | 1.83 | 62.70%     |
 
 ### Key Findings
 
 1. **Writing System Complexity**
-   - Linear B's large grapheme inventory (86) yields higher absolute entropy
-   - Redundancy remains comparable to modern languages (63.54%)
-   - Suggests information encoding efficiency is independent of writing system complexity
+   - Linear B’s large grapheme inventory (86) yields higher absolute entropy
+   - Redundancy remains comparable to modern languages (63.54%)
+   - Suggests that information encoding efficiency is not entirely dependent on writing system complexity
 
 2. **Language Family Patterns**
-   - Germanic languages show highest redundancy (German: 71.68%, Dutch: 70.82%)
-   - Romance languages show moderate redundancy (65-69%)
-   - Modern Greek shows the lowest redundancy (60.64%)
-   - Suggests systematic differences in information encoding across language families
+   - Germanic languages exhibit the highest redundancy (German: 71.68%, Dutch: 70.82%, Danish: 70.97%)
+   - Romance languages show moderate redundancy levels (65-69%), with French (69.08%) and Italian (68.46%) being notable
+   - Finnish, with a high predictability (73.0%), suggests additional redundancy potentially due to its rich morphology
+   - Modern Greek has the lowest redundancy among the European languages analyzed (60.64%)
+   - These findings suggest systematic differences in information encoding across language families, possibly influenced by grammatical structure and orthographic conventions
 
-3. **Corpus Effects**
-   - English shows consistent redundancy (62-66%) across different corpora
-   - Larger corpora (>5M tokens) tend toward slightly lower redundancy
-   - Validates methodology's reliability for cross-linguistic comparison
+3. **Corpus Effects on English**
+   - Predictability across English corpora is consistent, generally falling between 62-66%
+   - Larger corpora, such as Gutenberg, tend toward slightly lower redundancy, potentially reflecting increased linguistic diversity
+   - Methodology proves reliable for cross-corpora and cross-linguistic comparisons, suggesting stability in entropy metrics for English
 
-4. **Information Structure**
-   - All languages show consistent entropy reduction pattern (H0 > H1 > H2 > H3)
-   - Rate of reduction varies by language family
-   - Suggests universal principles in linguistic information structure
-
+4. **Information Structure Patterns**
+   - All languages demonstrate a clear entropy reduction pattern (H0 > H1 > H2 > H3), indicating universal principles in linguistic information structure
+   - The rate of reduction, as captured in predictability scores, varies with language; for example, Finnish and Danish show markedly high predictability, while Greek’s lower redundancy may reflect fewer structural constraints
+   
 ## References
 
 - Shannon, C. E. (1951). Prediction and Entropy of Printed English. Bell System Technical Journal.
