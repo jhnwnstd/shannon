@@ -20,6 +20,7 @@ This project replicates and extends Shannon's methodology using KenLM. This mode
 - `entropy_model/`: Directory for trained KenLM models
 - `Linear_B_Lexicon.csv`: Input corpus file containing Linear B words
 - `linearb_entro.py`: Script for Linear B and European language analysis
+- `new_entro.py`: Script for detailed entropy analysis
 - `shannon_entro.py`: Script for English corpora analysis
 - `Prediction_and_Entropy_of_Printed_English.pdf`: Shannon's original paper
 - `README.md`: This document
