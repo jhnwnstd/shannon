@@ -28,28 +28,39 @@ pip install -r requirements.txt
 python -c "import nltk; nltk.download(['brown', 'reuters', 'webtext', 'inaugural', 'nps_chat', 'state_union', 'gutenberg', 'europarl_raw'])"
 ```
 
-## Scripts
-
-**`english.py`** -- entropy of 7 English NLTK corpora:
+## Usage
 
 ```bash
-python english.py                # all corpora
-python english.py brown reuters  # specific ones
+python main.py english [corpus ...]       # English NLTK corpora
+python main.py crosslang [corpus ...]     # Linear B + Brown + Europarl
+python main.py analyze [corpus/lang ...]  # Full analysis with digrams/trigrams
 ```
 
-**`crosslang.py`** -- Linear B (from `linearb_lexicon.csv`) + Brown + 7 Europarl languages:
+Examples:
 
 ```bash
-python crosslang.py                    # all
-python crosslang.py linear_b french    # specific ones
+python main.py english brown reuters
+python main.py crosslang linear_b french
+python main.py analyze brown en de
 ```
 
-**`analyzer.py`** -- comprehensive analysis with per-file statistics, digram/trigram distributions, transition matrices, and Markov efficiency. All English corpora + 11 Europarl languages:
+No args after the mode runs all corpora for that mode. Scripts also work standalone (`python english.py brown`).
 
-```bash
-python analyzer.py                # all 18 corpus/language combinations
-python analyzer.py brown en de    # Brown + Europarl English & German
-```
+### Modes
+
+- **english** -- 7 NLTK corpora (Brown, Reuters, Webtext, Inaugural, NPS Chat, State of the Union, Gutenberg)
+- **crosslang** -- Linear B (from `linearb_lexicon.csv`) + Brown + 7 Europarl languages
+- **analyze** -- comprehensive per-file analysis with digram/trigram distributions, transition matrices, Markov efficiency. All English corpora + 11 Europarl languages
+
+### Project layout
+
+| File | Purpose |
+|------|---------|
+| `main.py` | Entry point |
+| `core.py` | Shared utilities: KenLM model building, entropy calculations, letter filters |
+| `english.py` | English corpus analysis |
+| `crosslang.py` | Cross-language analysis |
+| `analyzer.py` | Advanced `ShannonAnalyzer` class |
 
 ## How it works
 
