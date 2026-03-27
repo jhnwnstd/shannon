@@ -17,7 +17,7 @@ from nltk.corpus import brown, europarl_raw
 # Configuration
 Q_GRAMS = 8  # KenLM model n-gram level
 MODEL_DIR = Path.cwd() / "entropy_model"
-CORPUS_PATH = Path.cwd() / "Linear_B_Lexicon.csv"
+CORPUS_PATH = Path.cwd() / "linearb_lexicon.csv"
 
 LANGUAGES = [
     "english",

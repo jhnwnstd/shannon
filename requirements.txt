@@ -1,4 +1,9 @@
-kenlm @ https://github.com/kpu/kenlm/archive/master.zip
+# kenlm must be built from source with MAX_ORDER=10 to support 8-gram models:
+#   git clone https://github.com/kpu/kenlm.git
+#   cd kenlm && MAX_ORDER=10 python setup.py install
+#
+# The lmplz and build_binary CLI tools also need order>=8:
+#   mkdir build && cd build && cmake .. -DKENLM_MAX_ORDER=10 && make -j4
 nltk>=3.8
 numpy>=1.24
 pandas>=2.0

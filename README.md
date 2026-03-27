@@ -4,34 +4,51 @@ Character-level entropy and redundancy estimation for natural languages, extendi
 
 ## Setup
 
-Requires Python 3.11+ and the KenLM command-line tools (`lmplz`, `build_binary`).
+Requires Python 3.11+ and KenLM built from source with 8-gram support.
 
 ```bash
+# 1. Build KenLM with max order 10 (default 6 is too low for 8-grams)
+git clone https://github.com/kpu/kenlm.git
+cd kenlm
+
+# Python bindings
+MAX_ORDER=10 python setup.py install
+
+# CLI tools (lmplz, build_binary)
+mkdir build && cd build
+cmake .. -DKENLM_MAX_ORDER=10
+make -j4
+
+# Make sure lmplz and build_binary are on PATH
+export PATH="$(pwd)/bin:$PATH"
+
+# 2. Install remaining dependencies and NLTK corpora
+cd /path/to/this/repo
 pip install -r requirements.txt
 python -c "import nltk; nltk.download(['brown', 'reuters', 'webtext', 'inaugural', 'nps_chat', 'state_union', 'gutenberg', 'europarl_raw'])"
 ```
 
 ## Scripts
 
-**`shannon_entro.py`** -- English corpora (Brown, Reuters, Webtext, Inaugural, NPS Chat, State of the Union, Gutenberg):
+**`english.py`** -- entropy of 7 English NLTK corpora:
 
 ```bash
-python shannon_entro.py                # all corpora
-python shannon_entro.py brown reuters  # specific ones
+python english.py                # all corpora
+python english.py brown reuters  # specific ones
 ```
 
-**`linearb_entro.py`** -- Linear B (from `Linear_B_Lexicon.csv`) + Brown + 7 Europarl languages (EN, FR, DE, IT, EL, ES, NL):
+**`crosslang.py`** -- Linear B (from `linearb_lexicon.csv`) + Brown + 7 Europarl languages:
 
 ```bash
-python linearb_entro.py                    # all
-python linearb_entro.py linear_b french    # specific ones
+python crosslang.py                    # all
+python crosslang.py linear_b french    # specific ones
 ```
 
-**`new_entro.py`** -- Comprehensive analysis with per-file statistics, digram/trigram distributions, transition matrices, and Markov efficiency. Covers all English corpora + 11 Europarl languages:
+**`analyzer.py`** -- comprehensive analysis with per-file statistics, digram/trigram distributions, transition matrices, and Markov efficiency. All English corpora + 11 Europarl languages:
 
 ```bash
-python new_entro.py                # all 18 corpus/language combinations
-python new_entro.py brown en de    # Brown + Europarl English & German
+python analyzer.py                # all 18 corpus/language combinations
+python analyzer.py brown en de    # Brown + Europarl English & German
 ```
 
 ## How it works
@@ -87,7 +104,7 @@ Redundancy = `(1 - H3/H0) * 100%`
 
 ## References
 
-- Shannon, C. E. (1951). *Prediction and Entropy of Printed English*. Bell System Technical Journal. (included as PDF)
+- Shannon, C. E. (1951). *Prediction and Entropy of Printed English*. Bell System Technical Journal. (included as `shannon1951.pdf`)
 - Shannon, C. E. (1948). *A Mathematical Theory of Communication*. Bell System Technical Journal.
 - [KenLM](https://kheafield.com/code/kenlm/)
 - [Linear B Lexicon](https://linearb.xyz/)

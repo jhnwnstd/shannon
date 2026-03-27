@@ -560,11 +560,18 @@ class ShannonAnalyzer:
         )
 
         # Handle 'europarl_raw' with language_code
+        corpus_reader = None
+        corpus = None
+
         if corpus_name == "europarl_raw":
             from nltk.corpus import europarl_raw
 
             # Access the language-specific corpus reader
-            corpus_reader = getattr(europarl_raw, language_name)
+            corpus_reader = getattr(europarl_raw, language_name, None)
+            if corpus_reader is None:
+                raise ValueError(
+                    f"Language '{language_name}' not found in europarl_raw corpus."
+                )
             file_ids = (
                 corpus_reader.fileids()[:max_files]
                 if max_files
@@ -577,6 +584,8 @@ class ShannonAnalyzer:
                 raise ValueError(
                     f"Corpus '{corpus_name}' not found in NLTK corpus library."
                 )
+            if corpus is None:
+                raise ValueError(f"Corpus '{corpus_name}' is not available.")
             file_ids = (
                 corpus.fileids()[:max_files] if max_files else corpus.fileids()
             )
@@ -610,8 +619,12 @@ class ShannonAnalyzer:
             try:
                 # Retrieve raw text from the file
                 if corpus_name == "europarl_raw":
+                    if corpus_reader is None:
+                        raise ValueError("corpus_reader is not initialized")
                     text = corpus_reader.raw(file_id)
                 else:
+                    if corpus is None:
+                        raise ValueError("corpus is not initialized")
                     text = corpus.raw(file_id)
 
                 # Preprocess the text
